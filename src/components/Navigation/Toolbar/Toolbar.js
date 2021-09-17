@@ -3,9 +3,10 @@ import React from 'react';
 import classes from './Toolbar.css';
 import Logo from '../../Logo/Logo'
 import NavigationItems from '../NavigationItems/NavigationItems';
-const toolbar = () => (
+import HamburgerButton from './HamburgerButton/HamburgerButton';
+const toolbar = (props) => (
     <header className={classes.Toolbar}>
-        <div>MENU</div>
+        <HamburgerButton clicked = {props.toggleDrawer}/>
         <div className={classes.Logo}>
             <Logo />
         </div>
