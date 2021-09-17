@@ -48,6 +48,12 @@ class BurgerBuilder extends Component {
             purchasing : val,
         })
     }
+
+    continuePurchasing = () => {
+        console.log("buying");
+        alert("Thanks for buying");
+    }
+
     addItemHandler = (type) => {
         const updatedIngredients = {
             ...this.state.ingredients,
@@ -91,8 +97,12 @@ class BurgerBuilder extends Component {
         }
         return (
             <Aux>
-                <Modal show = {this.state.purchasing} cancelOrder = {this.purchasingHaldler}>
-                    <OrderSummary ingredients={this.state.ingredients} cancelOrder={this.purchasingHaldler} />
+                <Modal show = {this.state.purchasing} cancelOrder = {this.purchasingHaldler} >
+                    <OrderSummary 
+                        ingredients={this.state.ingredients}
+                        price = {this.state.totalPrice} 
+                        cancelOrder={this.purchasingHaldler} 
+                        continue={this.continuePurchasing}/>
                 </Modal>
                 <Burger ingredients={this.state.ingredients} haveIngredients = {this.state.purchasable}/>
                 <BuildControls  
