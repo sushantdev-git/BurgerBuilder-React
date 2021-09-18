@@ -6,6 +6,7 @@ import BuildControls from '../../components/Burger/BuildControls/BuildControls';
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
+import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 
 const Ingredient_Price = {
     salad: 0.5,
@@ -19,20 +20,26 @@ class BurgerBuilder extends Component {
     //     this.state = {...}
     // }
     state = {
-        ingredients: {
-            salad: 0,
-            bacon: 0,
-            cheese: 0,
-            meat: 0,
-        },
+        //this is the state of our burger builder
+        ingredients: null,
         purchasable : false,
         purchasing : false,
         totalPrice :4,
         loading: false,
     }
 
+    componentDidMount = () => {
+        axios.get('ingredients.json')
+            .then(response => {
+                this.setState({
+                    ingredients : response.data,
+                })
+            })
+            .catch(error => console.log(error));
+    }
     updatePurchasable = (ingredients) => {
-
+        //this method will be called to update purchasable variable 
+        //purchasable is used to disable/enable order Now button according to item count;
         let itemCount = Object.keys(ingredients).map(key => {
             return ingredients[key];
         })
@@ -45,6 +52,9 @@ class BurgerBuilder extends Component {
     }
 
     purchasingHaldler = (val) => {
+        //this method will set the purchasing variable in state to true/false
+        //if true then we will show the order summary, (this can be set true while clicking in ORDER NOW button)
+        //we can set the purchasing to false by clicking the cancel button in order summary or clicking backdrop in modal
         console.log(val);
         this.setState({
             purchasing : val,
@@ -52,6 +62,8 @@ class BurgerBuilder extends Component {
     }
 
     continuePurchasing = () => {
+
+        //this method will be called when user clicked "continue" in order summary, then we send out data to firebase.
         this.setState({
             loading:true,
         })
@@ -79,6 +91,8 @@ class BurgerBuilder extends Component {
     }
 
     addItemHandler = (type) => {
+        //this method will be used to add item to the burger 
+        //it will be called from build controls.
         const updatedIngredients = {
             ...this.state.ingredients,
         }
@@ -94,7 +108,8 @@ class BurgerBuilder extends Component {
     }
 
     removeItemHandler = (type) => {
-        
+        //this method will be used to remove item from burger
+        //this will be called from build controls
         const updatedIngredients = {
             ...this.state.ingredients,
         }
@@ -111,6 +126,7 @@ class BurgerBuilder extends Component {
         this.updatePurchasable(updatedIngredients);
     }
 
+
     render () {
         const disableInfo = {
             ...this.state.ingredients
@@ -120,9 +136,26 @@ class BurgerBuilder extends Component {
             disableInfo[key] = disableInfo[key] <= 0;
         }
 
-        let orderSummary  = <Spinner />;
+        let orderSummary = null;
 
-        if(!this.state.loading){
+        let burger = <Spinner />;
+        if(this.state.ingredients){
+            //we are fetching ingredient from server so if we ingredient only we show Burger and BuildControls
+            burger = (
+                <Aux>
+                    <Burger ingredients={this.state.ingredients} haveIngredients = {this.state.purchasable}/>
+                    <BuildControls  
+                    addItem = {this.addItemHandler} 
+                    removeItem = {this.removeItemHandler} 
+                    disabled={disableInfo}
+                    price = {this.state.totalPrice}
+                    canBuy = {this.state.purchasable}
+                    orderFood = {this.purchasingHaldler}
+                    />
+                </Aux>
+            );
+            
+            //and also same for order summary, which is dependent on ingredients.
             orderSummary = <OrderSummary 
             ingredients={this.state.ingredients}
             price = {this.state.totalPrice} 
@@ -130,23 +163,20 @@ class BurgerBuilder extends Component {
             continue={this.continuePurchasing}/>
         }
 
+        if(this.state.loading){
+            //if we send data to firebase then we should set a spinner is orderSummary
+            orderSummary = <Spinner />;
+        }
+
         return (
             <Aux>
-                <Modal show = {this.state.purchasing} cancelOrder = {this.purchasingHaldler} >
+                <Modal show = {this.state.purchasing} closeModal = {this.purchasingHaldler} >
                     {orderSummary}
                 </Modal>
-                <Burger ingredients={this.state.ingredients} haveIngredients = {this.state.purchasable}/>
-                <BuildControls  
-                addItem = {this.addItemHandler} 
-                removeItem = {this.removeItemHandler} 
-                disabled={disableInfo}
-                price = {this.state.totalPrice}
-                canBuy = {this.state.purchasable}
-                orderFood = {this.purchasingHaldler}
-                />
+                {burger}
             </Aux>
         );
     }
 }
 
-export default BurgerBuilder;
+export default withErrorHandler(BurgerBuilder, axios);
