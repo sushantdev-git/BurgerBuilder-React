@@ -1,8 +1,11 @@
 import React from 'react';
 
 import classes from './Burger.css';
-import BurgerIngredient from './BurgerIngredient/BurgerIngredient'
+import BurgerIngredient from './BurgerIngredient/BurgerIngredient';
+// import {withRouter} from 'react-router-dom';
+
 const burger = (props) => {
+    console.log(props);
     let transformedIngredient;
     transformedIngredient = Object.keys(props.ingredients).map((igKey) => {
         return [...Array(props.ingredients[igKey])].map((_, i) => {
@@ -22,4 +25,9 @@ const burger = (props) => {
     )
 }
 
+//if we pass a component with a HOC withRouter, then we can receive all the props that router provides 
+//because router only provider props to those component which is directly rendered with router.
+//so to use router props we have to user withRouter.
+
+// export default withRouter(burger);
 export default burger;

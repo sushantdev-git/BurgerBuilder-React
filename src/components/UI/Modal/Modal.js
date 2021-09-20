@@ -9,7 +9,7 @@ class Modal  extends Component {
         //this modal will only render if we have show property true
         //show we will check if show property has changed, if yes then React will render this else 
         //it will not be rendered.
-        return nextProps.show != this.props.show || nextProps.children != this.props.children;
+        return nextProps.show !== this.props.show || nextProps.children !== +this.props.children;
     }
 
     componentWillUpdate(){
