@@ -1,12 +1,24 @@
 import React from "react";
 
 import classes from './Order.css';
-const Order =  () => {
+const Order =  (props) => {
 
     return (
         <div className={classes.Order}>
-            <p>ingredients </p>
-            <p><strong>$5.45</strong></p>
+            <h3>Ingredients</h3>
+            {Object.keys(props.ingredients).map((ingredient, inx) => {
+                return (<p key={inx}
+                style={{
+                    "display":"inline-block",
+                    "border":"1px solid #eee",
+                    "boxShadow":"0 2px 3px #ccc",
+                    "padding":"10px",
+                    "margin": "5px"
+                }}>{ingredient}: {props.ingredients[ingredient]} </p>);
+            })}
+            <p><span style={{
+                "fontWeight":"900"
+            }}>Price</span>: <strong>{props.price}</strong></p>
         </div>
     )
 }

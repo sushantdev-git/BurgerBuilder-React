@@ -35,7 +35,7 @@ class ContactData extends Component {
             },
             delhiveryMethod: 'fastest',
             ingredients : this.props.ingredients,
-            price : this.props.totalPrice,
+            price : this.props.price,
         }
 
         //here sending the post request to the firebase,
