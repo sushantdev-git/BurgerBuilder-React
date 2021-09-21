@@ -12,9 +12,12 @@ const burger = (props) => {
         })
     });
 
-    if (transformedIngredient.length === 0) {
+    
+    if (transformedIngredient.map((e) => e.length).reduce((sum, len) => sum+len, 0) == 0){
+        //here checking if total sum of ingredient is 0, then show this <p>
         transformedIngredient = <p>Please start adding ingredients!</p>;
     }
+
     return (
         <div className={classes.Burger}>
             <BurgerIngredient type="bread-top"/>
