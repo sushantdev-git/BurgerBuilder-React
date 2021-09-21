@@ -10,19 +10,20 @@ const withErrorHandler = (WrappedComponent, axios) => {
             error:null,
         }
 
-        componentDidMount() {
-            this.resInterceptor = axios.interceptors.response.use(null, error => {
+        componentWillMount() {
+            this.resInterceptor = axios.interceptors.response.use(res => res, error => {
                 this.setState({error:error});
             });
             //settting the error in state.
 
             this.reqInterceptor = axios.interceptors.request.use(req => {
-                this.setState({error:null})
+                this.setState({error:null});
+                return req;
             })
             //if we are sending a new request we should clear any previous error stored in state of this componenet.
         }
 
-        componentDidUnmount() {
+        componentWillUnmount() {
             //evevery time the withErrorHandler runs it add an interceptor to axios,
             //so if withErrorHandler is called many times this will leads to memory leaks as it have so many interceptors attached to it.
             //so it is necessary that it this component is Unmounted we should also Unmount the interceptors.

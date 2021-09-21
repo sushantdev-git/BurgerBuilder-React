@@ -29,7 +29,7 @@ class BurgerBuilder extends Component {
     }
 
     componentDidMount = () => {
-        axios.get('ingredients.json')
+        axios.get('/ingredients.json')
             .then(response => {
                 this.setState({
                     ingredients : response.data,
@@ -37,6 +37,8 @@ class BurgerBuilder extends Component {
             })
             .catch(error => console.log(error));
     }
+
+
     updatePurchasable = (ingredients) => {
         //this method will be called to update purchasable variable 
         //purchasable is used to disable/enable order Now button according to item count;
@@ -64,32 +66,21 @@ class BurgerBuilder extends Component {
     continuePurchasing = () => {
 
         //this method will be called when user clicked "continue" in order summary, then we send out data to firebase.
-        // this.setState({
-        //     loading:true,
-        // })
-        // const order = {
-        //     user : {
-        //         name : 'Sushant',
-        //         email: 'test@test.com',
-        //         adddress : {
-        //             street : 'random',
-        //             zipCode: 3943982,
-        //             country: 'India',
-        //         }
-        //     },
-        //     delhiveryMethod: 'fastest',
-        //     ingredients : this.state.ingredients,
-        //     price : this.state.totalPrice,
-        // }
+        
+        let queryParams = [];
 
-        // //here sending the post request to the firebase,
-        // axios.post('/orders.json', order)
-        //     .then(response => {
-        //         this.setState({loading: false, purchasing: false})
-        //     })
-        //     .catch(error => this.setState({loading: false, purchasing: false}));
+        for(let i in this.state.ingredients){
+            // encodeURIComponent - Encodes a text string as a valid component of a Uniform Resource Identifier
+            queryParams.push(encodeURIComponent(i)+"="+encodeURIComponent(this.state.ingredients[i]));
+        }
 
-        this.props.history.push('/checkout')
+        queryParams.push("price="+this.state.totalPrice);
+
+        let queryString = queryParams.join('&');
+        this.props.history.push({
+            pathname:'/checkout',
+            search:'?'+ queryString,
+        })
     }
 
     addItemHandler = (type) => {
@@ -145,7 +136,7 @@ class BurgerBuilder extends Component {
             //we are fetching ingredient from server so if we ingredient only we show Burger and BuildControls
             burger = (
                 <Aux>
-                    <Burger ingredients={this.state.ingredients} haveIngredients = {this.state.purchasable}/>
+                    <Burger ingredients={this.state.ingredients}/>
                     <BuildControls  
                     addItem = {this.addItemHandler} 
                     removeItem = {this.removeItemHandler} 

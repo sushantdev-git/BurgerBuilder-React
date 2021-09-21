@@ -14,9 +14,6 @@ class Layout extends Component {
         this.setState({showSideDrawer: false});
     }
 
-    openSideDrawer = () => {
-        this.setState({showSideDrawer: true});
-    }
 
     sideDrawerToggler = () => {
         this.setState((prevState) => {
