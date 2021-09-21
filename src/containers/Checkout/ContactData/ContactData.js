@@ -19,7 +19,6 @@ class ContactData extends Component {
     orderHandler = (event) => {
         event.preventDefault();
 
-        console.log("hitting server");
         this.setState({
             loading:true,
         })
