@@ -27,3 +27,16 @@
     background-color: #eee;
     box-shadow: 0 2px 3px #ccc;
 }
+
+.Invalid{
+    background-color: rgb(255, 175, 175);
+    border: 1px solid red;
+}
+
+.NotChecked{
+    border: 1px solid orangered;
+}
+
+.ValidInput{
+    border:1px solid green,
+}

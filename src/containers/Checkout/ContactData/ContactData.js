@@ -12,7 +12,20 @@ class ContactData extends Component {
             name: this.getInputObject("input", "text", "", "Enter your name"),
             email: this.getInputObject("input", "email", "", "Enter your email"),
             street: this.getInputObject("input", "text", "", "Enter your street"),
-            zipCode: this.getInputObject("input", "text", "", "Enter ZIPCODE"),
+            zipCode: {
+                elementType: "input",
+                elementConfig: {
+                    type: "text",
+                    placeholder: "Enter zip code",
+                },
+                value: "",
+                validity: {
+                    required:true,
+                    minLength : 5,
+                    maxLength: 5,
+                },
+                isValid: "notChecked",
+            },
             country: this.getInputObject("input", "text", "", "Enter your country"),
             delhiveryMethod: {
                 elementType: "select",
@@ -22,10 +35,11 @@ class ContactData extends Component {
                         { value:"cheapest", displayValue:"Cheapest"},
                     ]
                 },
-                value: "",
+                value: "fastest",
+                isValid:true,
             }
         },
-
+        formIsValid: false,
         loading: false,
     }
 
@@ -38,6 +52,10 @@ class ContactData extends Component {
                 placeholder: placeholder,
             },
             value: value,
+            validity: {
+                required:true,
+            },
+            isValid: "notChecked",
         }
     }
 
@@ -51,11 +69,40 @@ class ContactData extends Component {
         }
 
         updatedElement.value = event.target.value;
+        updatedElement.isValid = this.checkValidity(updatedElement.validity, updatedElement.value);
         formData[inputIdentifier] = updatedElement;
 
+        let formIsValid = true;
+        for(let key in formData){
+            formIsValid = (formData[key].isValid && formData[key].isValid !== "notChecked") && formIsValid;
+        }
+
+        console.log(formIsValid);
         this.setState({
             orderForm: formData,
+            formIsValid: formIsValid,
         })
+    }
+
+    checkValidity(rules, value){
+
+        let isValid = true;
+        if(rules == undefined){
+            return isValid;
+        }
+        if(rules.required){
+            isValid = value.trim().length > 0 && isValid;
+        }
+
+        if(rules.minLength){
+            isValid = rules.minLength <= value.length && isValid;
+        }
+
+        if(rules.maxLength){
+            isValid = rules.maxLength >= value.length && isValid;
+        }
+
+        return isValid;
     }
 
     orderHandler = (event) => {
@@ -111,10 +158,12 @@ class ContactData extends Component {
                     elementConfig={form.config.elementConfig} 
                     value={form.config.value}
                     changed={(event) => this.inputChangeHandler(event,form.id)}
+                    valid = {form.config.isValid}
+                    shouldValidate = {form.config.validity}
                     >
                     </Input>
                 })}
-                <Button btnType="Success" clicked={this.orderHandler}>ORDER</Button>
+                <Button btnType="Success" disabled={!this.state.formIsValid} clicked={this.orderHandler}>ORDER</Button>
             </form>
         );
         if ( this.state.loading ) {
