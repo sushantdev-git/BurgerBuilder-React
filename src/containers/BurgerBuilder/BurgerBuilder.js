@@ -136,15 +136,22 @@ class BurgerBuilder extends Component {
             //we are fetching ingredient from server so if we ingredient only we show Burger and BuildControls
             burger = (
                 <Aux>
-                    <Burger ingredients={this.state.ingredients}/>
-                    <BuildControls  
-                    addItem = {this.addItemHandler} 
-                    removeItem = {this.removeItemHandler} 
-                    disabled={disableInfo}
-                    price = {this.state.totalPrice}
-                    canBuy = {this.state.purchasable}
-                    orderFood = {this.purchasingHaldler}
-                    />
+                    <div style={{
+                        "display":"flex",
+                        "flexDirection":"column",
+                        "justifyContent":"space-between",
+                        "height":"100%",
+                    }}>
+                        <Burger ingredients={this.state.ingredients}/>
+                        <BuildControls  
+                        addItem = {this.addItemHandler} 
+                        removeItem = {this.removeItemHandler} 
+                        disabled={disableInfo}
+                        price = {this.state.totalPrice}
+                        canBuy = {this.state.purchasable}
+                        orderFood = {this.purchasingHaldler}
+                        />
+                    </div>
                 </Aux>
             );
             
