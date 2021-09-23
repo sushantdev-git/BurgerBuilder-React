@@ -1,32 +1,22 @@
 import React, { Component } from "react";
+import {connect } from 'react-redux';
 
 import Button from "../../../components/UI/Button/Button";
 import classes from './ContactData.css';
 import axios from '../../../axios-orders';
 import Spinner from "../../../components/UI/Spinner/Spinner";
 import Input from "../../../components/UI/Input/Input";
+
+
 class ContactData extends Component {
 
     state = {
         orderForm : {
-            name: this.getInputObject("input", "text", "", "Enter your name"),
-            email: this.getInputObject("input", "email", "", "Enter your email"),
-            street: this.getInputObject("input", "text", "", "Enter your street"),
-            zipCode: {
-                elementType: "input",
-                elementConfig: {
-                    type: "text",
-                    placeholder: "Enter zip code",
-                },
-                value: "",
-                validity: {
-                    required:true,
-                    minLength : 5,
-                    maxLength: 5,
-                },
-                isValid: "notChecked",
-            },
-            country: this.getInputObject("input", "text", "", "Enter your country"),
+            name: this.getInputObject("input", "text", "", "Enter your name", {required: true}),
+            email: this.getInputObject("input", "email", "", "Enter your email",{required: true, isEmail:true}),
+            street: this.getInputObject("input", "text", "", "Enter your street",{required: true}),
+            zipCode: this.getInputObject("input", "text", "", "Enter Zip Code", {required:true, minLength : 5, maxLength: 5,}),
+            country: this.getInputObject("input", "text", "", "Enter your country",{required: true}),
             delhiveryMethod: {
                 elementType: "select",
                 elementConfig: {
@@ -44,7 +34,7 @@ class ContactData extends Component {
     }
 
 
-    getInputObject(elementType, type, value, placeholder){
+    getInputObject(elementType, type, value, placeholder, validity){
         return {
             elementType: elementType,
             elementConfig: {
@@ -52,9 +42,7 @@ class ContactData extends Component {
                 placeholder: placeholder,
             },
             value: value,
-            validity: {
-                required:true,
-            },
+            validity: validity,
             isValid: "notChecked",
         }
     }
@@ -84,22 +72,32 @@ class ContactData extends Component {
         })
     }
 
-    checkValidity(rules, value){
-
+    checkValidity(rules, value) {
         let isValid = true;
-        if(rules == undefined){
-            return isValid;
+        if (!rules) {
+            return true;
         }
-        if(rules.required){
-            isValid = value.trim().length > 0 && isValid;
-        }
-
-        if(rules.minLength){
-            isValid = rules.minLength <= value.length && isValid;
+        
+        if (rules.required) {
+            isValid = value.trim() !== '' && isValid;
         }
 
-        if(rules.maxLength){
-            isValid = rules.maxLength >= value.length && isValid;
+        if (rules.minLength) {
+            isValid = value.length >= rules.minLength && isValid
+        }
+
+        if (rules.maxLength) {
+            isValid = value.length <= rules.maxLength && isValid
+        }
+
+        if (rules.isEmail) {
+            const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+            isValid = pattern.test(value) && isValid
+        }
+
+        if (rules.isNumeric) {
+            const pattern = /^\d+$/;
+            isValid = pattern.test(value) && isValid
         }
 
         return isValid;
@@ -127,7 +125,7 @@ class ContactData extends Component {
                 }
             },
             delhiveryMethod: formData.delhiveryMethod.value,
-            ingredients : this.props.ingredients,
+            ingredients : this.props.ings,
             price : this.props.price,
         }
 
@@ -178,4 +176,12 @@ class ContactData extends Component {
     }
 }
 
-export default ContactData;
+
+const mapStateToProps = state => {
+    return {
+        ings: state.ingredients,
+        price: state.totalPrice,
+    }
+}
+
+export default connect(mapStateToProps)(ContactData);
