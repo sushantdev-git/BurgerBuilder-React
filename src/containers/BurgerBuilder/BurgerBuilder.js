@@ -9,7 +9,7 @@ import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
-import * as actionTypes from '../../store/actions';
+import * as burgerBuilderActions from '../../store/actions/index';
 
 class BurgerBuilder extends Component {
     // constructor(props) {
@@ -19,18 +19,9 @@ class BurgerBuilder extends Component {
     state = {
         //this is the state of our burger builder
         purchasing : false,
-        loading: false,
     }
 
-    componentDidMount = () => {
-        // axios.get('/ingredients.json')
-        //     .then(response => {
-        //         this.setState({
-        //             ingredients : response.data,
-        //         })
-        //     })
-        //     .catch(error => console.log(error));
-    }
+
 
 
     purchasingHaldler = (val) => {
@@ -49,6 +40,10 @@ class BurgerBuilder extends Component {
         this.props.history.push('/checkout');
     }
 
+    componentDidMount(){
+        this.props.onInitIngredient();
+    }
+
 
     render () {
         const disableInfo = {
@@ -61,7 +56,7 @@ class BurgerBuilder extends Component {
 
         let orderSummary = null;
 
-        let burger = <Spinner />;
+        let burger = this.props.error ? <p style={{"textAlign":"center"}}>Oops, looks like there is a error, Try again.</p> : <Spinner />;
         if(this.props.ings){
             //we are fetching ingredient from server so if we ingredient only we show Burger and BuildControls
             burger = (
@@ -93,10 +88,6 @@ class BurgerBuilder extends Component {
             continue={this.continuePurchasing}/>
         }
 
-        if(this.state.loading){
-            //if we send data to firebase then we should set a spinner is orderSummary
-            orderSummary = <Spinner />;
-        }
 
         return (
             <Aux>
@@ -115,14 +106,16 @@ const mapStateToProps = state => {
         ings: state.ingredients,
         price: state.totalPrice,
         purchasable: state.ingredientCount > 0,
+        error: state.error,
     }
 }
 
 //in matchDispatchProsp we create our functions that we want in our component and that will finally manipulate the state of redux store.
 const mapDispatchToProps = dispatch => {
     return {
-        onIngredientAdded: (ingName) => dispatch({type: actionTypes.ADD_INGRDIENT, ingredientName: ingName}),
-        onIngredientRemoved: (ingName) => dispatch({type: actionTypes.REMOVE_INGREDEINT, ingredientName: ingName}),
+        onIngredientAdded: (ingName) => dispatch(burgerBuilderActions.addIngredient(ingName)),
+        onIngredientRemoved: (ingName) => dispatch(burgerBuilderActions.removeIngredient(ingName)),
+        onInitIngredient: () => dispatch(burgerBuilderActions.initIngredients()),
     }
 }
 
