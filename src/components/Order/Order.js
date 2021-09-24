@@ -18,7 +18,7 @@ const Order =  (props) => {
             })}
             <p><span style={{
                 "fontWeight":"900"
-            }}>Price</span>: <strong>${props.price}</strong></p>
+            }}>Price</span>: <strong>${props.price.toFixed(2)}</strong></p>
         </div>
     )
 }

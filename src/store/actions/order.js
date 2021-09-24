@@ -40,3 +40,46 @@ export const purchaseInit = () => {
         type: actionTypes.PURCHASE_INIT
     }
 }
+
+
+export const fetchOrderSuccess = (orders) => {
+    return {
+        type: actionTypes.ORDER_FETCH_SUCCESS,
+        orders: orders
+    }
+}
+
+export const fetchOrderFailed = () => {
+    return {
+        type: actionTypes.ORDER_FETCH_FAILED,
+    }
+}
+
+export const fetchOrderInit = () => {
+    return {
+        type: actionTypes.ORDER_FETCH_INIT
+    }
+}
+
+export const fetchOrders = () => {
+    return dispatch => {
+        dispatch(fetchOrderInit())
+        axios.get('/orders.json')
+            .then((res) => {
+                let orders = []
+                
+                for(let key in res.data){
+                    console.log(res[key]);
+                    orders.push({
+                        id: key,
+                        ...res.data[key],
+                    })
+                }
+
+                dispatch(fetchOrderSuccess(orders))
+            })
+            .catch((err) => {
+                dispatch(fetchOrderFailed());
+            });
+    }
+}

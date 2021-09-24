@@ -9,4 +9,10 @@ export {
 export {
     burgerPurchase,
     purchaseInit,
+    fetchOrders,
 } from './order';
+
+
+export {
+    auth,
+} from './auth';  
