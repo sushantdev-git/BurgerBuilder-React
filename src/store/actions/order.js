@@ -18,7 +18,7 @@ export const burgerPurchaseFailed = (error) => {
 
 export const burgerPurchaseStart = () => {
     return {
-        type: actionTypes.BURGER_PURCHASE_FAILED
+        type: actionTypes.BURGER_PURCHASE_START
     }
 }
 
@@ -27,10 +27,16 @@ export const burgerPurchase = (orderData) => {
         dispatch(burgerPurchaseStart())
         axios.post('/orders.json', orderData)
             .then(response => {
-                dispatch(burgerPurcaseSuccess(response.data, orderData));
+                dispatch(burgerPurcaseSuccess(response.data.name, orderData));
             })
             .catch(error => {
                 dispatch (burgerPurchaseFailed(error))
             });
+    }
+}
+
+export const purchaseInit = () => {
+    return {
+        type: actionTypes.PURCHASE_INIT
     }
 }

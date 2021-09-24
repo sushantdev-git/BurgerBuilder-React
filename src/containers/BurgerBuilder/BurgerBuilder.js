@@ -9,7 +9,7 @@ import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
-import * as burgerBuilderActions from '../../store/actions/index';
+import * as actions from '../../store/actions/index';
 
 class BurgerBuilder extends Component {
     // constructor(props) {
@@ -38,6 +38,7 @@ class BurgerBuilder extends Component {
         //this method will be called when user clicked "continue" in order summary, then we send out data to firebase.
  
         this.props.history.push('/checkout');
+        this.props.onInitPurchase();
     }
 
     componentDidMount(){
@@ -103,19 +104,20 @@ class BurgerBuilder extends Component {
 //in mapStateToProp function we are getting state and slicing those attributes from state that we want in our component.
 const mapStateToProps = state => {
     return {
-        ings: state.ingredients,
-        price: state.totalPrice,
-        purchasable: state.ingredientCount > 0,
-        error: state.error,
+        ings: state.burgerBuilder.ingredients,
+        price: state.burgerBuilder.totalPrice,
+        purchasable: state.burgerBuilder.ingredientCount > 0,
+        error: state.burgerBuilder.error,
     }
 }
 
 //in matchDispatchProsp we create our functions that we want in our component and that will finally manipulate the state of redux store.
 const mapDispatchToProps = dispatch => {
     return {
-        onIngredientAdded: (ingName) => dispatch(burgerBuilderActions.addIngredient(ingName)),
-        onIngredientRemoved: (ingName) => dispatch(burgerBuilderActions.removeIngredient(ingName)),
-        onInitIngredient: () => dispatch(burgerBuilderActions.initIngredients()),
+        onIngredientAdded: (ingName) => dispatch(actions.addIngredient(ingName)),
+        onIngredientRemoved: (ingName) => dispatch(actions.removeIngredient(ingName)),
+        onInitIngredient: () => dispatch(actions.initIngredients()),
+        onInitPurchase: () => dispatch(actions.purchaseInit())
     }
 }
 
