@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import Input from "../../components/UI/Input/Input";
 import Button from "../../components/UI/Button/Button";
 import classes from './Auth.css';
+import Spinner from "../../components/UI/Spinner/Spinner";
 import * as actions from '../../store/actions/index';
 
 
@@ -14,6 +15,7 @@ class Auth extends Component {
             password : this.getInputObject("input", "password", "", "Enter your password",{required: true, minLength: 5}),
         },
         formIsValid: false,
+        isSignUp : true,
     }
 
     checkValidity(rules, value) {
@@ -89,9 +91,16 @@ class Auth extends Component {
     submitHandler = (event) => {
         event.preventDefault();
 
-        this.props.onAuth(this.state.form.email.value,this.state.form.password.value)
+        this.props.onAuth(this.state.form.email.value,this.state.form.password.value, this.state.isSignUp)
     }
 
+    switchAuthMode = () => {
+        this.setState(prevState => {
+            return {
+                isSignUp : !prevState.isSignUp
+            }
+        });
+    }
 
     render() {
         let formElementsArray = []
@@ -120,18 +129,38 @@ class Auth extends Component {
             </form>
         );
 
+        if(this.props.loading){
+            form = <Spinner />
+        }
+
+        let errorMessage = null;
+        if(this.props.error){
+            errorMessage  = (<p>{this.props.error.message}</p>);
+        }
+
         return (
                 <div className={classes.Auth}>
+                    {errorMessage}
                     {form}
+                    <Button btnType="Danger" disabled={false}
+                    clicked= {this.switchAuthMode}
+                    >Switch to {this.state.isSignUp ? "SignIn" : "SignUp"}</Button>
                 </div>
             );
     }
 }
 
-const matchDispatchProps = dispatch => {
+const mapStateToProps = state => {
     return {
-        onAuth: (email, password) => dispatch(actions.auth(email, password))
+        loading: state.auth.loading,
+        error: state.auth.error,
     }
 }
 
-export default connect(null, matchDispatchProps)(Auth);
+const matchDispatchProps = dispatch => {
+    return {
+        onAuth: (email, password, isSignUp) => dispatch(actions.auth(email, password, isSignUp))
+    }
+}
+
+export default connect(mapStateToProps, matchDispatchProps)(Auth);
