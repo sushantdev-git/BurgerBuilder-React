@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { Redirect } from "react-router";
 import Input from "../../components/UI/Input/Input";
 import Button from "../../components/UI/Button/Button";
 import classes from './Auth.css';
@@ -102,6 +103,12 @@ class Auth extends Component {
         });
     }
 
+    componentDidMount(){
+        //if user is not building burger, but path is redirected to order we will set path to home
+        if(!this.props.buildingBurger && this.props.authRedirectPath !== '/'){
+            this.props.onSetAuthRedirectPath();
+        }
+    }
     render() {
         let formElementsArray = []
         for(let key in this.state.form){
@@ -138,8 +145,15 @@ class Auth extends Component {
             errorMessage  = (<p>{this.props.error.message}</p>);
         }
 
+        let redirect = null;
+        if(this.props.isAuthenticated){
+            redirect = <Redirect to={this.props.authRedirectPath} />;
+        }
+
+
         return (
                 <div className={classes.Auth}>
+                    {redirect}
                     {errorMessage}
                     {form}
                     <Button btnType="Danger" disabled={false}
@@ -154,12 +168,16 @@ const mapStateToProps = state => {
     return {
         loading: state.auth.loading,
         error: state.auth.error,
+        isAuthenticated: state.auth.token != null,
+        buildingBurger : state.burgerBuilder.building,
+        authRedirectPath: state.auth.authRedirectPath,
     }
 }
 
 const matchDispatchProps = dispatch => {
     return {
-        onAuth: (email, password, isSignUp) => dispatch(actions.auth(email, password, isSignUp))
+        onAuth: (email, password, isSignUp) => dispatch(actions.auth(email, password, isSignUp)),
+        onSetAuthRedirectPath: () => dispatch(actions.sethAuthRedirectPath('/'))
     }
 }
 

@@ -22,10 +22,10 @@ export const burgerPurchaseStart = () => {
     }
 }
 
-export const burgerPurchase = (orderData) => {
+export const burgerPurchase = (orderData, token) => {
     return dispatch => {
         dispatch(burgerPurchaseStart())
-        axios.post('/orders.json', orderData)
+        axios.post('/orders.json?auth='+token, orderData)
             .then(response => {
                 dispatch(burgerPurcaseSuccess(response.data.name, orderData));
             })
@@ -61,10 +61,10 @@ export const fetchOrderInit = () => {
     }
 }
 
-export const fetchOrders = () => {
+export const fetchOrders = (token) => {
     return dispatch => {
         dispatch(fetchOrderInit())
-        axios.get('/orders.json')
+        axios.get('/orders.json?auth='+token) //token is required if we want to get data access from firebase if we have chaged the rules of read and write to null if user is not authenticated.
             .then((res) => {
                 let orders = []
                 

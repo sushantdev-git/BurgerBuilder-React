@@ -28,15 +28,21 @@ class BurgerBuilder extends Component {
         //this method will set the purchasing variable in state to true/false
         //if true then we will show the order summary, (this can be set true while clicking in ORDER NOW button)
         //we can set the purchasing to false by clicking the cancel button in order summary or clicking backdrop in modal
-        this.setState({
-            purchasing : val,
-        })
+        if(this.props.isAuthenticated){
+            this.setState({
+                purchasing : val,
+            })
+        }
+        else{
+            this.props.onSetRedirectPath('/checkout') //if user is not authenticated and but it have made a burger and clicked on ordernow
+            //so after authentication we will push user to order page.
+            this.props.history.push('/auth')
+        }
     }
 
     continuePurchasing = () => {
 
         //this method will be called when user clicked "continue" in order summary, then we send out data to firebase.
- 
         this.props.history.push('/checkout');
         this.props.onInitPurchase();
     }
@@ -75,6 +81,7 @@ class BurgerBuilder extends Component {
                         disabled={disableInfo}
                         price = {this.props.price}
                         canBuy = {this.props.purchasable}
+                        isAuthenticated = {this.props.isAuthenticated}
                         orderFood = {this.purchasingHaldler}
                         />
                     </div>
@@ -108,6 +115,7 @@ const mapStateToProps = state => {
         price: state.burgerBuilder.totalPrice,
         purchasable: state.burgerBuilder.ingredientCount > 0,
         error: state.burgerBuilder.error,
+        isAuthenticated: state.auth.token != null,
     }
 }
 
@@ -117,7 +125,8 @@ const mapDispatchToProps = dispatch => {
         onIngredientAdded: (ingName) => dispatch(actions.addIngredient(ingName)),
         onIngredientRemoved: (ingName) => dispatch(actions.removeIngredient(ingName)),
         onInitIngredient: () => dispatch(actions.initIngredients()),
-        onInitPurchase: () => dispatch(actions.purchaseInit())
+        onInitPurchase: () => dispatch(actions.purchaseInit()),
+        onSetRedirectPath : (path) => dispatch(actions.sethAuthRedirectPath(path))
     }
 }
 
